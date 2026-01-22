@@ -1,10 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { AppProvider } from './context/AppContext'; // Import your Context Provider
+import './index.css'; // Your single consolidated stylesheet
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    {/* The AppProvider must wrap App so that App.jsx and all its children 
+      (like AdminPanel or TimesheetTable) can access global state. 
+    */}
+    <AppProvider>
+      <App />
+    </AppProvider>
+  </React.StrictMode>
+);
