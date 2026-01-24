@@ -3,7 +3,8 @@ import api from '../api';
 import { useGlobalContext } from '../context/AppContext';
 
 const AdminPanel = () => {
-  const { setSyncStatus, triggerError } = useGlobalContext();
+  // Added 'logout' to the context destructuring
+  const { logout, setSyncStatus, triggerError } = useGlobalContext();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');
   const [isWiping, setIsWiping] = useState(false);
@@ -50,6 +51,13 @@ const AdminPanel = () => {
   return (
     <div className="admin-wrapper">
       <div className="admin-card">
+        {/* LOGOUT BUTTON ADDED HERE */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-20px' }}>
+          <button className="logout-button" onClick={logout}>
+            Exit Terminal
+          </button>
+        </div>
+
         <h2>SYSTEM ADMINISTRATION</h2>
         <p>Targeted Record Deletion (Permanent)</p>
         
