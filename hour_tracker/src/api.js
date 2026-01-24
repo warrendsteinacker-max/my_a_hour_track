@@ -1,14 +1,15 @@
 import axios from 'axios';
 
-// Create an instance of axios with your backend's base URL
+// 1. DYNAMIC BASE URL: 
+// It prioritizes your .env (Tailscale IP) but falls back to the current hostname
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// REQUEST INTERCEPTOR: Automatically attach the JWT token to every request
+// 2. REQUEST INTERCEPTOR: Attach the JWT token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -17,20 +18,30 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// RESPONSE INTERCEPTOR: Handle global errors (like expired tokens)
+// 3. RESPONSE INTERCEPTOR: Handle Global Errors & Tailscale Connection Drops
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If the server returns a 401 (Unauthorized), the token might be expired
+    // A. NETWORK ERROR (Tailscale is off or Server is down)
+    if (!error.response) {
+      // We dispatch a custom event that your StatusBar.jsx can listen to
+      // to display: "Something went wrong contact me at 231-878-0753"
+      window.dispatchEvent(new CustomEvent('architect-system-error', { 
+        detail: "System Unreachable" 
+      }));
+      console.error("CRITICAL: Tailscale connection lost or PM2 process down.");
+    }
+
+    // B. AUTHENTICATION ERROR (401)
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/'; // Kick user back to login
+      localStorage.removeItem('hour_track_user');
+      window.location.href = '/'; // Kick back to login
     }
+
     return Promise.reject(error);
   }
 );

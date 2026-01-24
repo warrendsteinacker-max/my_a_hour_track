@@ -4,20 +4,31 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [hours, setHours] = useState({
+    monday: 0, tuesday: 0, wednesday: 0, thursday: 0, friday: 0, saturday: 0, sunday: 0
+  });
   const [syncStatus, setSyncStatus] = useState("Saved");
   const [appError, setAppError] = useState(null);
 
-  // Derived State: Automatically check if the user is the Architect
-  // This makes your App.jsx routes much cleaner
-  const isAdmin = user?.role === 'the_unseen_architect_77';
+  // 1. PRIVATE ARCHITECT ROLE: Check against .env variable
+  const isAdmin = user?.role === import.meta.env.VITE_ADMIN_ROLE_ID;
 
-  // PERSISTENCE: Check if user is already in LocalStorage when the app starts
+  // 2. PERSISTENCE: Check LocalStorage on boot
   useEffect(() => {
     const savedUser = localStorage.getItem('hour_track_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    const savedHours = localStorage.getItem('hours');
+    if (savedUser) setUser(JSON.parse(savedUser));
+    if (savedHours) setHours(JSON.parse(savedHours));
   }, []);
+
+  // 3. TABLE RESET: Clears local state for a new cycle (7 days or 1 min)
+  const resetTable = () => {
+    const freshHours = {
+      monday: 0, tuesday: 0, wednesday: 0, thursday: 0, friday: 0, saturday: 0, sunday: 0
+    };
+    setHours(freshHours);
+    localStorage.setItem('hours', JSON.stringify(freshHours));
+  };
 
   const login = (userData) => {
     setUser(userData);
@@ -30,6 +41,7 @@ export const AppProvider = ({ children }) => {
     setAppError(null);
     localStorage.removeItem('hour_track_user');
     localStorage.removeItem('token');
+    localStorage.removeItem('hours');
   };
 
   const triggerError = (errMessage) => {
@@ -40,7 +52,10 @@ export const AppProvider = ({ children }) => {
 
   const value = {
     user,
-    isAdmin, // Now available globally!
+    hours,
+    setHours,
+    resetTable,
+    isAdmin,
     login,
     logout,
     syncStatus,

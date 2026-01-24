@@ -281,3 +281,17 @@ body {
   color: var(--primary-red);
   border-color: var(--primary-red);
 }
+
+/* added this */
+
+.status-text.error {
+  color: #ff0000;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
