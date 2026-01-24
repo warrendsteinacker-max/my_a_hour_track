@@ -5,12 +5,16 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
 
-// Route Imports - ESM requires the .js extension for local files
+// 1. CONFIG & DB IMPORTS
+import connectDB from './config/db.js';
+import './config/scheduler.js'; // Just importing it starts the background tasks
+
+// 2. ROUTE IMPORTS
 import authRoutes from './routes/authRoutes.js';
 import sheetRoutes from './routes/sheetRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
-// Middleware Imports
+// 3. MIDDLEWARE IMPORTS
 import { errorMiddleware } from './middleware/errorMiddleware.js';
 import { logger } from './middleware/logger.js';
 
@@ -20,45 +24,48 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Configuration
-const PORT = process.env.PORT || 5000;
-const HOST = '0.0.0.0'; // Binding to 0.0.0.0 for Tailscale access
+// Initialize MongoDB
+connectDB();
 
-// 1. GLOBAL MIDDLEWARE
+// Global Configuration
+const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0'; // Essential for Tailscale network binding
+
+// 4. GLOBAL MIDDLEWARE
 app.use(cors()); 
 app.use(express.json()); 
 app.use(logger); 
 
-// 2. ENSURE STORAGE DIRECTORY EXISTS
-const storagePath = path.join(__dirname, 'storage', 'users');
+// 5. STORAGE SETUP (For local logs and temp files)
+const storagePath = path.join(__dirname, 'storage');
 if (!fs.existsSync(storagePath)) {
     fs.mkdirSync(storagePath, { recursive: true });
 }
 
-// 3. MVC ROUTES
+// 6. MVC ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/sheet', sheetRoutes);
 app.use('/api/admin', adminRoutes);
 
-// 4. HEALTH CHECK (For PM2 24/7 Monitoring)
+// Health Check for PM2 monitoring
 app.get('/api/health', (req, res) => {
     res.status(200).json({
         status: 'Online',
         uptime: process.uptime(),
-        network: 'Private Tailscale Active',
-        timestamp: new Date().toISOString()
+        database: 'Connected',
+        scheduler: 'Active',
+        network: 'Private Tailscale Active'
     });
 });
 
-// 5. ERROR HANDLING MIDDLEWARE
+// 7. ERROR HANDLING
 app.use(errorMiddleware);
 
-// 6. START SERVER
 app.listen(PORT, HOST, () => {
     console.log(`=========================================`);
-    console.log(`  ARCHITECT BACKEND (ESM MODE) LIVE      `);
-    console.log(`  PORT: ${PORT}                          `);
-    console.log(`  HOST: ${HOST} (Tailscale Ready)       `);
-    console.log(`  PM2: Active 24/7                      `);
+    console.log(`  ARCHITECT SYSTEM: 24/7 ACTIVE         `);
+    console.log(`  MONGODB: Connected                    `);
+    console.log(`  SCHEDULER: Running Background Tasks   `);
+    console.log(`  TAILSCALE: http://${HOST}:${PORT}     `);
     console.log(`=========================================`);
 });
