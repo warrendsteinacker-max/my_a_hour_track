@@ -1,21 +1,31 @@
 import cron from 'node-cron';
-import axios from 'axios'; // To call your own internal invoice route
+import axios from 'axios';
 import 'dotenv/config';
 
-// Toggle this to TRUE for 1-minute testing
+// 1. CONFIGURATION: Toggle 'true' for 1-minute testing, 'false' for 7-day production
+// As per your requirement: Every 7 days or every 1 minute for testing.
 const IS_TEST_MODE = true; 
 const cronSchedule = IS_TEST_MODE ? '*/1 * * * *' : '0 0 * * 0';
 
 cron.schedule(cronSchedule, async () => {
-    console.log(`Running ${IS_TEST_MODE ? 'TEST' : 'WEEKLY'} Invoice Generation...`);
+    const timestamp = new Date().toLocaleString();
+    console.log(`[${timestamp}] Initiating ${IS_TEST_MODE ? 'TEST' : 'WEEKLY'} Cycle...`);
+
     try {
-        // This calls your server's own internal logic to process all users
-        await axios.post(`http://localhost:${process.env.PORT || 5000}/api/admin/generate-invoices`, {
-            reason: IS_TEST_MODE ? "Minute-based Test Run" : "Standard Weekly Run"
+        // 2. SELF-POST REQUEST:
+        // Using 0.0.0.0 for Tailscale network compatibility as configured in app.listen.
+        // The endpoint is /api/sheet/generate-invoices based on our sheetRoutes setup.
+        const response = await axios.post(`http://0.0.0.0:${process.env.PORT || 5000}/api/sheet/generate-invoices`, {
+            reason: IS_TEST_MODE ? "Minute-based Test Run" : "Standard Weekly Run",
+            systemKey: process.env.INTERNAL_SYSTEM_KEY // Bypasses Admin role check via .env key
         });
-        console.log("Invoices processed successfully.");
+
+        if (response.status === 200) {
+            console.log(`[${timestamp}] SUCCESS: Invoices generated & DB wiped. Front-end tables will clear.`);
+        }
     } catch (err) {
-        console.error("Invoicing Task Failed:", err.message);
+        // Log errors to PM2 console so you can see them via 'pm2 logs'
+        console.error(`[${timestamp}] SCHEDULER ERROR:`, err.response?.data?.message || err.message);
     }
 });
 

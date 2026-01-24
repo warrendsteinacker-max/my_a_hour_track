@@ -1,0 +1,14 @@
+[
+  {
+    "username": "Architect",
+    "password": "hashed_or_plain_password",
+    "role": "architect_secret_77",
+    "hourlyRate": 150
+  },
+  {
+    "username": "Employee1",
+    "password": "password123",
+    "role": "employee",
+    "hourlyRate": 45
+  }
+]
