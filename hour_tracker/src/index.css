@@ -192,7 +192,80 @@ body {
 .login-wrapper {
   height: 100vh;
   display: flex;
+  flex-direction: column; /* Stack login card and status bar */
   align-items: center;
   justify-content: center;
+  background: #1a1a1a; /* Dark background for security feel */
+}
+
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+}
+
+.login-form {
+  margin-top: 25px;
+  text-align: left;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; /* Prevents input from overflowing */
+}
+
+.login-button {
+  width: 100%;
+  padding: 15px;
   background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-button:hover {
+  background: #333;
+}
+
+/* for time sheet */
+
+.logout-button {
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.logout-button:hover {
+  background: #f8f8f8;
+  color: var(--primary-red);
+  border-color: var(--primary-red);
 }

@@ -3,7 +3,9 @@ import api from '../api';
 import { useGlobalContext } from '../context/AppContext';
 
 const TimesheetTable = () => {
-  const { user, setSyncStatus, triggerError } = useGlobalContext();
+  // Added 'logout' to the context destructuring
+  const { user, logout, setSyncStatus, triggerError } = useGlobalContext();
+  
   const [hours, setHours] = useState({
     monday: 0, tuesday: 0, wednesday: 0, thursday: 0, friday: 0, saturday: 0, sunday: 0
   });
@@ -11,6 +13,7 @@ const TimesheetTable = () => {
   // 1. Load existing hours for the current week on mount
   useEffect(() => {
     const fetchCurrentHours = async () => {
+      if (!user?.username) return; // Safety check
       try {
         const res = await api.get(`/api/sheet/current/${user.username}`);
         if (res.data) setHours(res.data);
@@ -19,7 +22,7 @@ const TimesheetTable = () => {
       }
     };
     fetchCurrentHours();
-  }, [user.username]);
+  }, [user?.username]);
 
   // 2. Handle Input Changes
   const handleChange = (e) => {
@@ -38,6 +41,7 @@ const TimesheetTable = () => {
       });
       setSyncStatus("Saved");
     } catch (err) {
+      // Triggers your "231-878-0753" status bar message
       triggerError("Could not save timesheet.");
     }
   };
@@ -45,11 +49,20 @@ const TimesheetTable = () => {
   // Calculate Total
   const totalHours = Object.values(hours).reduce((a, b) => a + b, 0);
 
+  // Safety return if user hasn't loaded yet
+  if (!user) return <div className="loading">Loading user profile...</div>;
+
   return (
     <div className="timesheet-container">
-      <header className="timesheet-header">
-        <h2>Weekly Timesheet</h2>
-        <p>Employee: <strong>{user.username}</strong> | Rate: ${user.hourlyRate}/hr</p>
+      <header className="timesheet-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h2>Weekly Timesheet</h2>
+          <p>Employee: <strong>{user.username}</strong> | Rate: ${user.hourlyRate}/hr</p>
+        </div>
+        {/* LOGOUT BUTTON ADDED HERE */}
+        <button className="logout-button" onClick={logout} style={{ padding: '8px 15px', cursor: 'pointer' }}>
+          Logout
+        </button>
       </header>
 
       <div className="timesheet-grid">

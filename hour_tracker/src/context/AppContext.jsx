@@ -1,42 +1,46 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// 1. Create the Context
 const AppContext = createContext();
 
-// 2. The Provider Component
 export const AppProvider = ({ children }) => {
-  // Global State for the user (username, hourlyRate, role)
   const [user, setUser] = useState(null);
-
-  // Global Sync Status (Saved, Syncing, or Error message)
   const [syncStatus, setSyncStatus] = useState("Saved");
-
-  // Global App Error (for 404/500 full-page overlays)
   const [appError, setAppError] = useState(null);
 
-  // Helper: Login
+  // Derived State: Automatically check if the user is the Architect
+  // This makes your App.jsx routes much cleaner
+  const isAdmin = user?.role === 'the_unseen_architect_77';
+
+  // PERSISTENCE: Check if user is already in LocalStorage when the app starts
+  useEffect(() => {
+    const savedUser = localStorage.getItem('hour_track_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
   const login = (userData) => {
     setUser(userData);
-    setAppError(null); // Clear errors on login
+    setAppError(null);
+    localStorage.setItem('hour_track_user', JSON.stringify(userData));
   };
 
-  // Helper: Logout
   const logout = () => {
     setUser(null);
     setAppError(null);
+    localStorage.removeItem('hour_track_user');
+    localStorage.removeItem('token');
   };
 
-  // Helper: Handle Backend Errors
   const triggerError = (errMessage) => {
+    // Your signature Architect contact error
     setSyncStatus("Something went wrong contact me at 231-878-0753");
-    // Optionally log this to the console for your own debugging
     console.error("System Error Triggered:", errMessage);
   };
 
-  // 3. The Value object that all components can access
   const value = {
     user,
-    setUser,
+    isAdmin, // Now available globally!
     login,
     logout,
     syncStatus,
@@ -53,7 +57,6 @@ export const AppProvider = ({ children }) => {
   );
 };
 
-// 4. Custom Hook for easy access in your components
 export const useGlobalContext = () => {
   const context = useContext(AppContext);
   if (!context) {
