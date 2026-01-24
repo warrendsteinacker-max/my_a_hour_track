@@ -1,30 +1,28 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 
-// FIX: Change 'context' to 'AppContext' to match your image
+// FIXED IMPORTS based on your file tree images
 import { useGlobalContext } from './context/AppContext'; 
-
-// standard components (loaded immediately)
 import TimesheetTable from './components/TimesheetTable';
 import StatusBar from './components/StatusBar';
 import Login from './components/Login';
 
-// SECURE: This chunk is ONLY fetched if the user is Warren
+// Lazy loading the Admin Panel for the "Architect"
 const AdminPanel = lazy(() => import('./components/AdminPanel'));
 
 function App() {
   const { user, isAdmin, logout } = useGlobalContext();
 
-  // 1. Private Gatekeeper
+  // Security: Bounce unauthorized users back to the home page
   const ProtectedAdmin = ({ children }) => {
     if (!isAdmin) return <Navigate to="/" replace />;
     return children;
   };
 
-  // 2. Auth Gate
+  // If not logged in, only show the Login screen
   if (!user) {
     return (
-      <div className="login-wrapper">
+      <div className="auth-wrapper">
         <Login />
         <StatusBar />
       </div>
@@ -33,18 +31,18 @@ function App() {
 
   return (
     <Router>
-      <div className="app-layout">
+      <div className="app-container">
         <nav className="navbar">
-          <div className="nav-left">
-            <Link to="/" className="nav-logo">TIMESHEET SYSTEM</Link>
+          <div className="nav-brand">
+            <Link to="/">A-HOUR TRACKER</Link>
           </div>
           
-          <div className="nav-right">
-            <Link to="/">My Hours</Link>
+          <div className="nav-links">
+            <Link to="/">Home</Link>
             
-            {/* Visible only if backend confirmed architect status */}
+            {/* The "Nuclear" Link: Visible only to the Architect */}
             {isAdmin && (
-              <Link to="/admin-wipe" className="nav-admin-red">SYSTEM WIPE</Link>
+              <Link to="/admin-wipe" className="admin-danger-link">SYSTEM WIPE</Link>
             )}
             
             <button onClick={logout} className="logout-btn">
@@ -53,8 +51,8 @@ function App() {
           </div>
         </nav>
 
-        <main className="content-area">
-          <Suspense fallback={<div className="loading-spinner">Loading Secure Module...</div>}>
+        <main className="main-content">
+          <Suspense fallback={<div className="loading">Loading Secure Module...</div>}>
             <Routes>
               <Route path="/" element={<TimesheetTable />} />
               
@@ -67,11 +65,13 @@ function App() {
                 } 
               />
 
+              {/* Catch-all redirect */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </main>
 
+        {/* Persistent bottom bar for "Saved" or "231..." errors */}
         <StatusBar />
       </div>
     </Router>
