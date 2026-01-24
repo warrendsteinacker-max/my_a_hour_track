@@ -45,7 +45,7 @@ body {
 .nav-logo {
   font-weight: 800;
   text-decoration: none;
-  color: white;
+  color: white !important;
   letter-spacing: 1px;
 }
 
@@ -63,7 +63,6 @@ body {
 
 .nav-right a:hover { color: white; }
 
-/* The RED Admin Link - Bold and dangerous */
 .nav-admin-red {
   color: var(--primary-red) !important;
   font-weight: bold;
@@ -87,6 +86,13 @@ body {
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
+.timesheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
 .timesheet-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -108,6 +114,29 @@ body {
   font-size: 1rem;
 }
 
+.timesheet-summary {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-display span {
+  margin-right: 20px;
+}
+
+.save-button {
+  background: var(--success-green);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 /* =========================================
    4. ADMIN PANEL (THE RED ZONE)
    ========================================= */
@@ -125,9 +154,16 @@ body {
   box-shadow: 0 15px 35px rgba(220, 53, 69, 0.1);
   text-align: center;
   max-width: 450px;
+  width: 100%;
 }
 
-.admin-card h2 { color: var(--primary-red); margin-top: 0; }
+.admin-card h2 { color: var(--primary-red); margin-top: 10px; }
+
+.admin-hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 20px 0;
+}
 
 .admin-select {
   width: 100%;
@@ -153,6 +189,12 @@ body {
 .nuclear-button:hover { background: var(--dark-red); }
 .nuclear-button:active { transform: scale(0.98); }
 
+.admin-warning {
+  margin-top: 20px;
+  font-size: 0.75rem;
+  color: #888;
+}
+
 /* =========================================
    5. STATUS BAR (BOTTOM)
    ========================================= */
@@ -167,12 +209,12 @@ body {
   display: flex;
   justify-content: space-between;
   font-size: 0.85rem;
+  z-index: 1000;
 }
 
 .status-text.saved { color: var(--success-green); font-weight: bold; }
 .status-text.syncing { color: #f39c12; }
 
-/* The "Call Me" Error Style */
 .status-text.error {
   color: var(--primary-red);
   font-weight: 900;
@@ -187,15 +229,15 @@ body {
 }
 
 /* =========================================
-   6. LOGIN SCREEN
+   6. LOGIN & SHARED UI
    ========================================= */
 .login-wrapper {
   height: 100vh;
   display: flex;
-  flex-direction: column; /* Stack login card and status bar */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #1a1a1a; /* Dark background for security feel */
+  background: #1a1a1a;
 }
 
 .login-card {
@@ -208,35 +250,9 @@ body {
   text-align: center;
 }
 
-.login-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  letter-spacing: 2px;
-}
-
-.login-form {
-  margin-top: 25px;
-  text-align: left;
-}
-
-.input-group {
-  margin-bottom: 20px;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box; /* Prevents input from overflowing */
-}
+.input-group { margin-bottom: 20px; text-align: left; }
+.input-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+.input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
 
 .login-button {
   width: 100%;
@@ -247,20 +263,16 @@ body {
   border-radius: 4px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
 }
-
-.login-button:hover {
-  background: #333;
-}
-
-/* for time sheet */
 
 .logout-button {
   background: transparent;
   border: 1px solid #ddd;
   border-radius: 4px;
   color: #666;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
@@ -268,12 +280,4 @@ body {
   background: #f8f8f8;
   color: var(--primary-red);
   border-color: var(--primary-red);
-}
-
-/* for admin page */
-
-.admin-hr {
-  border: 0;
-  border-top: 1px solid #eee;
-  margin: 20px 0;
 }

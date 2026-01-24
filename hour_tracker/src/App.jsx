@@ -1,28 +1,22 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { useGlobalContext } from './context/AppContext';
 
-// FIXED IMPORTS based on your file tree images
-import { useGlobalContext } from './context/AppContext'; 
+// Standard Components
+import Login from './components/Login';
 import TimesheetTable from './components/TimesheetTable';
 import StatusBar from './components/StatusBar';
-import Login from './components/Login';
 
-// Lazy loading the Admin Panel for the "Architect"
+// Admin Panel (Lazy Loaded for Security)
 const AdminPanel = lazy(() => import('./components/AdminPanel'));
 
 function App() {
-  const { user, isAdmin, logout } = useGlobalContext();
+  const { user, isAdmin } = useGlobalContext();
 
-  // Security: Bounce unauthorized users back to the home page
-  const ProtectedAdmin = ({ children }) => {
-    if (!isAdmin) return <Navigate to="/" replace />;
-    return children;
-  };
-
-  // If not logged in, only show the Login screen
+  // AUTH GATE: Only show Login + StatusBar if not logged in
   if (!user) {
     return (
-      <div className="auth-wrapper">
+      <div className="login-wrapper">
         <Login />
         <StatusBar />
       </div>
@@ -31,47 +25,35 @@ function App() {
 
   return (
     <Router>
-      <div className="app-container">
+      <div className="app-layout">
+        {/* GLOBAL NAVIGATION: Only shows links if user is Architect */}
         <nav className="navbar">
-          <div className="nav-brand">
-            <Link to="/">A-HOUR TRACKER</Link>
-          </div>
-          
-          <div className="nav-links">
-            <Link to="/">Home</Link>
-            
-            {/* The "Nuclear" Link: Visible only to the Architect */}
+          <Link to="/" className="nav-logo">A-HOUR TRACKER</Link>
+          <div className="nav-right">
+            <Link to="/">My Sheet</Link>
             {isAdmin && (
-              <Link to="/admin-wipe" className="admin-danger-link">SYSTEM WIPE</Link>
+              <Link to="/admin-wipe" className="nav-admin-red">TERMINAL</Link>
             )}
-            
-            <button onClick={logout} className="logout-btn">
-              Logout ({user.username})
-            </button>
           </div>
         </nav>
 
-        <main className="main-content">
-          <Suspense fallback={<div className="loading">Loading Secure Module...</div>}>
+        <main className="content-area">
+          <Suspense fallback={<div className="loading">Accessing Secure Module...</div>}>
             <Routes>
               <Route path="/" element={<TimesheetTable />} />
               
+              {/* PROTECTED ROUTE: Bounces non-admins back to home */}
               <Route 
                 path="/admin-wipe" 
-                element={
-                  <ProtectedAdmin>
-                    <AdminPanel />
-                  </ProtectedAdmin>
-                } 
+                element={isAdmin ? <AdminPanel /> : <Navigate to="/" replace />} 
               />
 
-              {/* Catch-all redirect */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </main>
 
-        {/* Persistent bottom bar for "Saved" or "231..." errors */}
+        {/* The bottom bar that stays visible everywhere */}
         <StatusBar />
       </div>
     </Router>
