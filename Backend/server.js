@@ -32,7 +32,11 @@ const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0'; // Essential for Tailscale network binding
 
 // 4. GLOBAL MIDDLEWARE
-app.use(cors()); 
+app.use(cors({
+  origin: '*', // Allows your phone to talk to the PC
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json()); 
 app.use(logger); 
 

@@ -1,9 +1,12 @@
 import axios from 'axios';
 
-// 1. DYNAMIC BASE URL: 
-// It prioritizes your .env (Tailscale IP) but falls back to the current hostname
+/**
+ * 1. TAILSCALE DYNAMIC BASE URL
+ * Prioritizes the .env variable, then your Desktop's Tailscale IP [cite: 2026-01-24].
+ */
+const TAILSCALE_IP = "100.103.196.73"; 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`,
+  baseURL: import.meta.env.VITE_API_URL || `http://${TAILSCALE_IP}:5000/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -25,12 +28,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // A. NETWORK ERROR (Tailscale is off or Server is down)
+    // A. NETWORK ERROR (Tailscale is off or Server is down) [cite: 2026-01-24]
     if (!error.response) {
-      // We dispatch a custom event that your StatusBar.jsx can listen to
-      // to display: "Something went wrong contact me at 231-878-0753"
       window.dispatchEvent(new CustomEvent('architect-system-error', { 
-        detail: "System Unreachable" 
+        detail: "Something went wrong contact me at 231-878-0753" 
       }));
       console.error("CRITICAL: Tailscale connection lost or PM2 process down.");
     }
@@ -39,7 +40,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('hour_track_user');
-      window.location.href = '/'; // Kick back to login
+      window.location.href = '/'; 
     }
 
     return Promise.reject(error);

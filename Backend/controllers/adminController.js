@@ -2,12 +2,37 @@ import Timesheet from '../models/Timesheet.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+// Import the background task logic to allow manual triggering
+import { generateInvoicesAndClearDB } from '../config/scheduler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Path logic to match your structure: /Backend/storage/users/
 const usersStoragePath = path.join(__dirname, '../storage/users');
+
+/**
+ * @desc    Manually force a DB-to-JSON migration and clear the UI
+ * Allows Architect to trigger the 7-day or 1-min cycle on demand.
+ */
+export const manualInvoiceTrigger = async (req, res) => {
+    try {
+        console.log("-----------------------------------------");
+        console.log(" ARCHITECT OVERRIDE: Manual Wipe Started ");
+        console.log("-----------------------------------------");
+
+        // Executes the core scheduler logic [cite: 2026-01-24]
+        await generateInvoicesAndClearDB();
+
+        res.status(200).json({ 
+            message: 'Manual reset complete. Invoices archived to storage.',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error(`MANUAL WIPE ERROR: ${error.message}`);
+        res.status(500).json({ message: 'Manual trigger failed', error: error.message });
+    }
+};
 
 /**
  * @desc    Get Stats: Total UI entries and System Uptime
@@ -96,7 +121,7 @@ export const getRawLogs = (req, res) => {
         }
 
         const logs = fs.readFileSync(logPath, 'utf8');
-        // Return last 100 lines for the UI
+        // Return last 100 lines for the UI terminal
         const logLines = logs.split('\n').slice(-100).join('\n');
         res.status(200).json({ logs: logLines });
     } catch (error) {
