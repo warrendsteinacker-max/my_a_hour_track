@@ -18,7 +18,7 @@ const Login = () => {
     
     try {
       // 1. Call your Node.js backend
-      const res = await api.post('/api/auth/login', credentials);
+      const res = await api.post('/auth/login', credentials);
       
       // 2. Store the JWT token for the api.js interceptor
       localStorage.setItem('token', res.data.token);
