@@ -25,39 +25,45 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="app-layout">
-        {/* GLOBAL NAVIGATION: Only shows links if user is Architect */}
-        <nav className="navbar">
-          <Link to="/" className="nav-logo">A-HOUR TRACKER</Link>
-          <div className="nav-right">
-            <Link to="/">My Sheet</Link>
-            {isAdmin && (
-              <Link to="/admin-wipe" className="nav-admin-red">TERMINAL</Link>
-            )}
-          </div>
-        </nav>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login/>} />
+          <Route path="/dashboard" element={<TimesheetTable />} />
+        </Routes>
+      </Router>
+    // <Router>
+    //   <div className="app-layout">
+    //     {/* GLOBAL NAVIGATION: Only shows links if user is Architect */}
+    //     <nav className="navbar">
+    //       <Link to="/" className="nav-logo">A-HOUR TRACKER</Link>
+    //       <div className="nav-right">
+    //         <Link to="/">My Sheet</Link>
+    //         {isAdmin && (
+    //           <Link to="/admin-wipe" className="nav-admin-red">TERMINAL</Link>
+    //         )}
+    //       </div>
+    //     </nav>
 
-        <main className="content-area">
-          <Suspense fallback={<div className="loading">Accessing Secure Module...</div>}>
-            <Routes>
-              <Route path="/" element={<TimesheetTable />} />
+    //     <main className="content-area">
+    //       <Suspense fallback={<div className="loading">Accessing Secure Module...</div>}>
+    //         <Routes>
+    //           <Route path="/" element={<TimesheetTable />} />
               
-              {/* PROTECTED ROUTE: Bounces non-admins back to home */}
-              <Route 
-                path="/admin-wipe" 
-                element={isAdmin ? <AdminPanel /> : <Navigate to="/" replace />} 
-              />
+    //           {/* PROTECTED ROUTE: Bounces non-admins back to home */}
+    //           <Route 
+    //             path="/admin-wipe" 
+    //             element={isAdmin ? <AdminPanel /> : <Navigate to="/" replace />} 
+    //           />
 
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </main>
+    //           <Route path="*" element={<Navigate to="/" replace />} />
+    //         </Routes>
+    //       </Suspense>
+    //     </main>
 
-        {/* The bottom bar that stays visible everywhere */}
-        <StatusBar />
-      </div>
-    </Router>
+    //     {/* The bottom bar that stays visible everywhere */}
+    //     <StatusBar />
+    //   </div>
+    // </Router>
   );
 }
 

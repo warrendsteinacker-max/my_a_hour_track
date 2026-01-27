@@ -26,6 +26,8 @@ const Login = () => {
       
       // 3. Update the Global Context (sets user and isAdmin flag)
       login(res.data.user);
+
+      nav('/dashboard'); // Redirect to main dashboard
     } catch (err) {
       // If server is off or login fails, trigger the 231-878-0753 status
       triggerError(err.response?.data?.message || "Connection Refused");
