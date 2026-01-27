@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useNavigate } from 'react';
 import api from '../api';
 import { useGlobalContext } from '../context/AppContext';
 
@@ -6,6 +6,7 @@ const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
   const { login, triggerError } = useGlobalContext();
+  const nav = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;

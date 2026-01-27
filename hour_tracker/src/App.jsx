@@ -6,6 +6,7 @@ import { useGlobalContext } from './context/AppContext';
 import Login from './components/Login';
 import TimesheetTable from './components/TimesheetTable';
 import StatusBar from './components/StatusBar';
+import AdminPanel from './components/AdminPanel';
 
 // Admin Panel (Lazy Loaded for Security)
 const AdminPanel = lazy(() => import('./components/AdminPanel'));
