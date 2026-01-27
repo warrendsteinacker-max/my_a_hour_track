@@ -16,7 +16,7 @@ const TimesheetTable = () => {
     const fetchCurrentHours = async () => {
       if (!user?.username) return; 
       try {
-        const res = await api.get(`/api/sheet/current/${user.username}`);
+        const res = await api.get(`/sheet/current/${user.username}`);
         
         // If the server returns empty hours but our local state has data, 
         // it means the scheduler triggered an invoice and wiped the week.
@@ -53,7 +53,7 @@ const TimesheetTable = () => {
   const handleSave = async () => {
     try {
       setSyncStatus("Syncing...");
-      await api.post('/api/sheet/save', {
+      await api.post('/sheet/save', {
         username: user.username,
         hours: hours,
         hourlyRate: user.hourlyRate

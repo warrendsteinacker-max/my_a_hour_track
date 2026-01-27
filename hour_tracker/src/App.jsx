@@ -1,28 +1,33 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { useGlobalContext } from './context/AppContext';
+// import React, { lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import { useGlobalContext } from './context/AppContext';
+
+// Navigate, Link
+
+// Suspense
 
 // Standard Components
 import Login from './components/Login';
 import TimesheetTable from './components/TimesheetTable';
-import StatusBar from './components/StatusBar';
-import AdminPanel from './components/AdminPanel';
+// import StatusBar from './components/StatusBar';
+// import AdminPanel from './components/AdminPanel';
 
 // Admin Panel (Lazy Loaded for Security)
-const AdminPanel = lazy(() => import('./components/AdminPanel'));
+// const AdminPanel = lazy(() => import('./components/AdminPanel'));
 
 function App() {
-  const { user, isAdmin } = useGlobalContext();
+
+  // const { user, isAdmin } = useGlobalContext();
 
   // AUTH GATE: Only show Login + StatusBar if not logged in
-  if (!user) {
-    return (
-      <div className="login-wrapper">
-        <Login />
-        <StatusBar />
-      </div>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <div className="login-wrapper">
+  //       <Login />
+  //       <StatusBar />
+  //     </div>
+  //   );
+  // }
 
   return (
       <Router>
